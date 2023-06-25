@@ -1,0 +1,97 @@
+asyncapi: 2.6.0
+info:
+  version: 1.0.0
+  title: Order Service
+  description: Service that handles order commands.
+
+servers:
+  ordersTopic:
+    url: orders-sns-topic
+    protocol: HTTP
+
+channels:
+  OrderService:
+    servers:
+      - ordersTopic
+    subscribe:
+      summary: Subscribe to receive notification events.
+      message:
+        $ref: '#/components/messages/OrderNotificationEvent'
+components:
+  messages:
+    OrderNotificationEvent:
+      name: OrderNotificationEvent
+      payload:
+        $ref: '#/components/schemas/OrderCreatedNotification'
+  schemas:
+    OrderEventMetadata:
+      type: object
+      properties:
+        metadata:
+          type: object
+          required:
+            - orderId
+            - state
+          properties:
+            orderId:
+              type: string
+            state:
+              type: string
+              enum:
+              - OrderCreated
+              - OrderCanceled
+              - OrderRefused
+              - OrderPaymentRejected
+              - OrderConfirmed
+    OrderCreatedNotification:
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/OrderEventMetadata'
+    Event:
+      type: object
+      required:
+      - specVersion
+      - scope
+      - eventType
+      - eventName
+      - idempotencyKey
+      - contentType
+      - ref
+      - metadata
+      properties:
+        specVersion:
+          type: string
+        scope:
+          type: string
+        eventType:
+          type: string
+          enum:
+          - INSERT
+          - UPDATE
+          - DELETE
+        eventName:
+          type: string
+          enum:
+          - INTEGRATION
+          - DOMAIN
+          - NOTIFICATION
+          - DELTA
+          - CARRIED-STATE
+        idempotencyKey:
+          type: string
+        contentType:
+          type: string
+          enum:
+          - JSON
+          - AVRO
+          - PROTOBUF
+        ref:
+          type: string
+        metadataVersion:
+          type: string
+        dataVersion:
+          type: string
+        metadata:
+          type: object
+        data:
+          type: object
