@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "target": "es2019",
+        "types": [
+            "node", "jest"
+        ],
+        "baseUrl": "./",
+        "paths": {
+            "@shared/*": ["shared/*"],
+        },
+        "skipLibCheck": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
+        
+    },
+    "require": [
+        "ts-node/register/transpile-only"
+    ],
+    "exclude": [
+    
+        "esbuild.config.js",
+        "__tests__/**/*.spec.ts"
+    ]
+}

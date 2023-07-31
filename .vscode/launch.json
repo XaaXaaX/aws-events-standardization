@@ -1,0 +1,56 @@
+{
+  "configurations": [
+    {
+      "name": "Launch stream doc Validattion",
+      "type": "node",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    },
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "src/node/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--logHeapUsage",
+        "-c",
+        "src/node/jest.config.js"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "Test Lambda (nodejs14.x)",
+      "invokeTarget": {
+        "target": "code",
+        "lambdaHandler": "index.handler",
+        "projectRoot": "build/Application/Test"
+      },
+      "lambda": {
+        "runtime": "nodejs14.x",
+        "payload": {
+          "json": {
+            "Records":[
+           ]
+          }
+        },
+        "environmentVariables": {
+          "AWS_REGION": "us-west-1",
+          "ENV_TWO": "v1",
+          "ENV_ONE": "http://google.com"
+        }
+      },
+      "sam": {},
+      "aws": {}
+    }
+  ]
+}

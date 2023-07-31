@@ -1,0 +1,96 @@
+{
+    "allOf": [
+        {
+            "type": "object",
+            "required": [
+                "specVersion",
+                "scope",
+                "eventType",
+                "eventName",
+                "idempotencyKey",
+                "contentType",
+                "ref",
+                "metadata"
+            ],
+            "properties": {
+                "specVersion": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "eventType": {
+                    "type": "string",
+                    "enum": [
+                        "INSERT",
+                        "UPDATE",
+                        "DELETE"
+                    ]
+                },
+                "eventName": {
+                    "type": "string",
+                    "enum": [
+                        "INTEGRATION",
+                        "DOMAIN",
+                        "NOTIFICATION",
+                        "DELTA",
+                        "CARRIED-STATE"
+                    ]
+                },
+                "idempotencyKey": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string",
+                    "enum": [
+                        "JSON",
+                        "AVRO",
+                        "PROTOBUF"
+                    ]
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "metadataVersion": {
+                    "type": "string"
+                },
+                "dataVersion": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object"
+                },
+                "data": {
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "type": "object",
+                    "required": [
+                        "orderId",
+                        "state"
+                    ],
+                    "properties": {
+                        "orderId": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string",
+                            "enum": [
+                                "OrderCreated",
+                                "OrderCanceled",
+                                "OrderRefused",
+                                "OrderPaymentRejected",
+                                "OrderConfirmed"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
