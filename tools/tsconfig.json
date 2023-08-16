@@ -1,14 +1,13 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ESNext",
         "lib": ["ESNext"],
-        "module":"ESNext",
+        "module":"CommonJS",
         "outDir": "./dist",
         "typeRoots": ["node_modules/@types"],
         "baseUrl": "./",
         "types": [
             "node",
-            "jest"
         ],
         "resolveJsonModule": true,
         "esModuleInterop": true,
@@ -25,9 +24,6 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowSyntheticDefaultImports": true,
-        "paths": {
-        "@shared/*": ["shared/*"],
-    },
     },
     "exclude": [
         "esbuild.config.js",
@@ -36,7 +32,4 @@
     "require": [
         "ts-node/register/transpile-only"
     ],
-    "ts-node": {
-        "require": ["tsconfig-paths/register"]
-    }
 }

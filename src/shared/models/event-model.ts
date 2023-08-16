@@ -1,47 +1,59 @@
-import { v4 as uuid, v5 as uuidV5 } from 'uuid';
+import { CloudEvent } from "cloudevents";
+export type SpecVersion = "1.0";
+export type DataContentType = "application/json";
+export type EventCategory = 'IntegrationEvent' | 'NotificationEvent' | 'CarriedStateEvent' | 'DeltaEvent';
 
-export type SpecVesrion = "1.0.2";
-export type DataContentType = "JSON";
-export type EventCategory = 'NOTIFICATION' | 'INTEGRATION' | 'VIEW' | 'DELTA';
+type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
-export type EventModel<TPayload, EventType = string> = {
-    specVersion?: SpecVesrion; // The cloudEvents Spec Version the latest is 1.0.2
-    time: string;
-    id: string; // an identifier that keeps unique in the context of the source
+type EventEnvelopeProperties<EventType extends string, TData> = Partial<EventEnvelope<EventType, TData>> & Pick<EventEnvelope<EventType, TData>, 'id' | 'type' | 'source'>;
+
+type EventNotificationEnvelopeProperties<EventType extends string, TData> = WithRequired<EventEnvelopeProperties<EventType, TData>, 'subject'>;
+
+type IntegrationEventEnvelopeProperties<EventType extends string, TData> = EventEnvelopeProperties<EventType, TData>;
+
+export class EventEnvelope<EventType extends string, TData> extends  CloudEvent<TData> {
+    
+    correlationid?: string;
+    idempotencykey?: string;
+    eventcategory?: EventCategory;
     type: EventType;
-    category: EventCategory; 
-    source: string; // Identifies the context of event producer
-    subject?: string; // to simplify consumers filtering process the source add some meaningful info side of source / type and id
-    idempotencyKey: string;
-    correlationId: string;
-    dataSchema?: string; // the path to the schema definition for event
-    dataVersion?: string; // the version of data model represented in data object
-    dataContentType?: DataContentType; // the data item contenttype 
-    data?: TPayload
-}
 
-export function InitEvent<TData, TEventType>(
-    id: string,
-    source: string,
-    eventType: TEventType,
-    eventCategory: EventCategory,
-    dataSchema?: string,
-    eventData?: TData,
-    dataVersion?: string
-     ): EventModel<TData, TEventType> {
-        
-    return {
-        correlationId: uuid(),
-        idempotencyKey: uuidV5(JSON.stringify(eventData ?? id), "40781d63-9741-40a6-aa25-c5a35d47abd6"),
-        id,
-        time: new Date().toISOString(),
-        data: eventData,
-        type: eventType,
-        source,
-        category: eventCategory,
-        dataSchema,
-        specVersion: "1.0.2",
-        dataVersion,
-        dataContentType: 'JSON'
+    constructor(event: EventEnvelopeProperties<EventType, TData>){
+        super(event);
     }
-}
+
+    static createEventNotificationEnvelope<EventType extends string, TData>(event: EventNotificationEnvelopeProperties<EventType, TData>): EventEnvelope<EventType, TData> {
+        delete event.data
+        event.eventcategory = 'NotificationEvent';
+        return new EventEnvelope(event);
+    }
+
+    static createIntegrationEventEnvelope<EventType extends string, TData>(event: IntegrationEventEnvelopeProperties<EventType, TData>): EventEnvelope<EventType, TData> {
+        event.eventcategory = 'IntegrationEvent';
+        return new EventEnvelope(event);
+    }
+
+    static createEventEnvelope<EventType extends string, TData>(event: EventEnvelopeProperties<EventType, TData>) {
+        return new EventEnvelope(event);
+    }
+
+    static deserialize<EventType extends string, TData>(json: string) : EventEnvelope<EventType, TData> {
+
+        if(!json) {
+            throw new Error("argument was null of undefined");
+        }
+
+        const props = JSON.parse(json) as EventEnvelopeProperties<EventType, TData>;
+
+        const envelope = new EventEnvelope(props);
+
+        if(!envelope.validate()) {
+            throw new Error("Not a valid cloud event schema");
+        }
+
+        return envelope;
+    }
+ }
+
+
+

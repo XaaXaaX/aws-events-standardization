@@ -1,5 +1,5 @@
-module "event_producer" {
-    source = "./modules/event-producer"
+module "order_service" {
+    source = "./modules/orders"
     lambda_dist_dir = "../src/dist/event-producer"
     application = "event-standards"
     environment = "dev"

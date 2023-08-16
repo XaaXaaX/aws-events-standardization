@@ -1,0 +1,137 @@
+asyncapi: 2.6.0
+
+info:
+  title: order system event Specification (v1)
+  version: 'v1.0'
+
+servers:
+  eventTopic:
+    url: aws-event-standardization-topic
+    protocol: HTTP
+    description: This is the order event topic.
+
+channels:
+  order-events:
+    servers:
+      - eventTopic
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/OrderConfirmedEvent'
+          - $ref: '#/components/messages/OrderReceivedEvent'
+
+components:
+  messages:
+    OrderConfirmedEvent:
+      payload:
+        $ref: '#/components/schemas/OrderConfirmedEvent'
+
+    OrderReceivedEvent:
+      payload:
+        $ref: '#/components/schemas/OrderReceivedEvent'
+
+  schemas:
+    orderId:
+      description: The unique identifier of an order
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    userId:
+      description: The unique identifier of a user
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    productId:
+      description: The unique identifier of a user
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    Order:
+      required:
+        - orderId
+        - userId
+        - productId
+        - price
+        - quantity
+        - date
+      type: object
+      description: order model
+      properties:
+        orderId:
+          "$ref": "#/components/schemas/orderId"
+        date:
+          description: Date of order submition.
+          type: string
+          format: date-time
+        userId:
+          "$ref": "#/components/schemas/userId"
+        productId:
+          "$ref": "#/components/schemas/productId"
+        price:
+          type: number
+        quantity:
+          type: integer
+      title: Order
+
+    EventEnvelope:
+      type: object
+      allOf:
+      - $ref: 'https://raw.githubusercontent.com/cloudevents/spec/v1.0.1/spec.json'
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventcategory:
+          $ref: "#/components/schemas/EventCategory"
+        idempotencykey:
+          type: string
+          format: uuid
+        correlationid:
+          type: string
+          format: uuid
+
+    EventType:
+      type: string
+      enum: 
+        - "order.received.v1" 
+        - "order.Confirmed.v1"
+
+    EventCategory:
+      type: string
+      enum: 
+        - "IntegrationEvent" 
+        - "DeltaEvent" 
+        - "NotificationEvent"
+        - "CarriedStateEvent"
+
+    OrderConfirmedEvent:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/EventEnvelope'  
+      properties:
+        data:
+          type: object
+          properties:
+            orderId:
+              $ref: '#/components/schemas/orderId'
+        type:
+          $ref: '#/components/schemas/EventType'
+      required:
+        - data
+
+    OrderReceivedEvent:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/EventEnvelope'
+      properties:
+        data:
+          $ref: '#/components/schemas/Order'
+        eventcategory:
+          $ref: "#/components/schemas/EventCategory"
+          default: IntegrationEvent
+        type:
+          $ref: '#/components/schemas/EventType'
+      required:
+        - data

@@ -46,7 +46,7 @@ module.exports = {
       '@eventcatalog/plugin-doc-generator-asyncapi',
       {
         pathToSpec: [
-          path.join(__dirname, '../streams/Order/1.0.0', 'asyncapi.yaml')
+          path.join(__dirname, '../Order/1.0.0', 'asyncapi.yaml')
         ],
         versionEvents: false,
         renderNodeGraph: true,

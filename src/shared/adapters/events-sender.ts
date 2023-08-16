@@ -11,7 +11,6 @@ const SendMessageEvent = async (event: any): Promise<void> => {
     await sqsClient.send(new SendMessageCommand(input));
 }
 
-
 export {
     SendMessageEvent
 }
