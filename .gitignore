@@ -9,6 +9,7 @@ node_modules
 .next
 out
 dist
+build
 
 # Misc
 .DS_Store

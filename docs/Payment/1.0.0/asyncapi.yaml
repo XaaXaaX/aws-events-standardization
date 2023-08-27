@@ -1,0 +1,105 @@
+asyncapi: 2.6.0
+
+info:
+  title: payment system event Specification (v1)
+  version: 'v1.0'
+
+servers:
+  eventTopic:
+    url: aws-payment-event-standardization-topic
+    protocol: HTTP
+    description: This is the payment event topic.
+
+channels:
+  payment-events:
+    servers:
+      - eventTopic
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/PaymentConfirmedEvent'
+
+components:
+  messages:
+    PaymentConfirmedEvent:
+      payload:
+        $ref: '#/components/schemas/PaymentConfirmedEvent'
+
+  schemas:
+    paymentId:
+      description: The unique identifier of an payment
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    orderId:
+      description: The unique identifier of a user
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    Payment:
+      required:
+        - paymentId
+        - orderId
+        - amount
+        - date
+      type: object
+      description: payment model
+      properties:
+        paymentId:
+          "$ref": "#/components/schemas/paymentId"
+        date:
+          description: Date of payment submition.
+          type: string
+          format: date-time
+        orderId:
+          "$ref": "#/components/schemas/orderId"
+        amount:
+          type: number
+      title: Payment
+
+    EventEnvelope:
+      type: object
+      allOf:
+      - $ref: 'https://raw.githubusercontent.com/cloudevents/spec/v1.0.1/spec.json'
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventcategory:
+          $ref: "#/components/schemas/EventCategory"
+        idempotencykey:
+          type: string
+          format: uuid
+        correlationid:
+          type: string
+          format: uuid
+
+    EventType:
+      type: string
+      enum: 
+        - "payment.received.v1" 
+        - "payment.Confirmed.v1"
+
+    EventCategory:
+      type: string
+      enum: 
+        - "IntegrationEvent" 
+        - "DeltaEvent" 
+        - "NotificationEvent"
+        - "CarriedStateEvent"
+
+    PaymentConfirmedEvent:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/EventEnvelope'
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+        eventcategory:
+          $ref: "#/components/schemas/EventCategory"
+          default: IntegrationEvent
+        type:
+          $ref: '#/components/schemas/EventType'
+      required:
+        - data

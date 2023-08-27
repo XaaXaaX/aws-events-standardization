@@ -63,7 +63,7 @@ const generator = new TypeScriptGenerator({
   let fileContent = "";
   for (const model of models) {
     console.log(model)
-    fileContent += 'export ' + model.result;
+    fileContent += 'export '.concat(model.result);
     fileContent += `\r\n`
     fileContent += " "
     fileContent += `\r\n`

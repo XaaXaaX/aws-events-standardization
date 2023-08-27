@@ -1,15 +1,14 @@
 import { EventEnvelope } from "@shared/models/event-model";
-import { OrderSource } from "@shared/models/orders/models";
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from "@shared/cross-cutting/logger";
-import { OrderEventValidator } from "@shared/specs/order-v1-vaidator";
+import { OrderEventValidator } from "@shared/specs/order/order-v1-vaidator";
 
 export class BaseHandler {
 	protected readonly validator = new OrderEventValidator(); 
-    GenerateIntegrationEvent = async <EventType extends string, TData> (eventType: EventType, eventData: TData): Promise<EventEnvelope<EventType, TData>> => {
+    GenerateIntegrationEvent = async <EventType extends string, TData> (source: string, eventType: EventType, eventData: TData): Promise<EventEnvelope<EventType, TData>> => {
         const integration = EventEnvelope.createIntegrationEventEnvelope({
 			id: uuidv4(),
-			source: OrderSource,
+			source: source,
 			type: eventType,
 			data: eventData
 		});
@@ -22,10 +21,10 @@ export class BaseHandler {
 		throw new Error("Order Integration Event is not valid");
     }
 
-	GenerateNotificationEvent = async <EventType extends string, TData> (eventType: EventType, eventData: TData, subject: string): Promise<EventEnvelope<EventType, TData>> => {
+	GenerateNotificationEvent = async <EventType extends string, TData> (source: string, eventType: EventType, eventData: TData, subject: string): Promise<EventEnvelope<EventType, TData>> => {
         const nontification = EventEnvelope.createEventNotificationEnvelope({
 			id: uuidv4(),
-			source: OrderSource,
+			source: source,
 			type: eventType,
 			subject,
 			data: eventData

@@ -6,7 +6,7 @@ info:
 
 servers:
   eventTopic:
-    url: aws-event-standardization-topic
+    url: aws-order-event-standardization-topic
     protocol: HTTP
     description: This is the order event topic.
 
@@ -94,7 +94,8 @@ components:
       type: string
       enum: 
         - "order.received.v1" 
-        - "order.Confirmed.v1"
+        - "order.confirmed.v1"
+        - "order.validated.v1"
 
     EventCategory:
       type: string

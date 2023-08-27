@@ -3,7 +3,7 @@ const esbuild = require('esbuild')
 const {  globSync }  = require("glob");
 
 const entryPoints = globSync("./**/lambdas/*.ts", { ignore: "node_modules/**"})
-const outDir = `dist`
+const outDir = `build`
 
 console.log(entryPoints)
 require('esbuild').build({

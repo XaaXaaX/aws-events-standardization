@@ -1,0 +1,99 @@
+asyncapi: 2.6.0
+
+info:
+  title: product system event Specification (v1)
+  version: 'v1.0'
+
+servers:
+  eventTopic:
+    url: aws-product-event-standardization-topic
+    protocol: HTTP
+    description: This is the product event topic.
+
+channels:
+  product-events:
+    servers:
+      - eventTopic
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/ProductAvailabilityConfirmedEvent'
+
+components:
+  messages:
+    ProductAvailabilityConfirmedEvent:
+      payload:
+        $ref: '#/components/schemas/ProductAvailabilityConfirmedEvent'
+
+  schemas:
+    productId:
+      description: The unique identifier of an product
+      type: string
+      pattern: ^([A-Za-z0-9_-]{21})$
+
+    Product:
+      required:
+        - productId
+        - price
+        - quantity
+        - date
+      type: object
+      description: product model
+      properties:
+        productId:
+          "$ref": "#/components/schemas/productId"
+        date:
+          description: Date of product submition.
+          type: string
+          format: date-time
+        price:
+          type: number
+        quantity:
+          type: integer
+      title: Product
+
+    EventEnvelope:
+      type: object
+      allOf:
+      - $ref: 'https://raw.githubusercontent.com/cloudevents/spec/v1.0.1/spec.json'
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventcategory:
+          $ref: "#/components/schemas/EventCategory"
+        idempotencykey:
+          type: string
+          format: uuid
+        correlationid:
+          type: string
+          format: uuid
+
+    EventType:
+      type: string
+      enum: 
+        - "product.availability-confirmed.v1"
+
+    EventCategory:
+      type: string
+      enum: 
+        - "IntegrationEvent" 
+        - "DeltaEvent" 
+        - "NotificationEvent"
+        - "CarriedStateEvent"
+
+    ProductAvailabilityConfirmedEvent:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/EventEnvelope'  
+      properties:
+        data:
+          type: object
+          properties:
+            productId:
+              $ref: '#/components/schemas/productId'
+        type:
+          $ref: '#/components/schemas/EventType'
+      required:
+        - data

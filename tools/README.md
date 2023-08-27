@@ -40,7 +40,7 @@ To lighten the validation process we generae a typescript variable consisting of
 
 ``` shell
     > cd dev-tools/api-docs-tools
-    > npm i & npm run generate-ts-schema -- --spec-file-path=../docs/Order/1.0.0/asyncapi.yaml  --dest-file-path=../src/shared/specs/order-v1-schema.ts
+    > npm i & npm run generate-ts-schema -- --spec-file-path=../docs/Order/1.0.0/asyncapi.yaml  --dest-file-path=../src/shared/specs/order/order-v1-schema.ts
 ```
 
 
@@ -72,5 +72,5 @@ Having a simpler way to generate types and use them is a practice since decades 
 [here](./gen-ts-types-from-asyncapi-spec.ts) the type generator for typescript.
 
 ``` shell
-    npm run generate-models -- --spec-file-path=../docs/Order/1.0.0/asyncapi.yaml  --dest-file-path=../src/shared/specs/order-v1-models.ts
+    npm run generate-models -- --spec-file-path=../docs/Order/1.0.0/asyncapi.yaml  --dest-file-path=../src/shared/specs/order/order-v1-models.ts
 ```

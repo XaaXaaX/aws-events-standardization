@@ -1,7 +1,7 @@
 {
   "name": "event-producer-consumer",
   "scripts": {
-    "esbuild": "node esbuild.config.js",
+    "build": "tsc & node esbuild.config.js",
     "test": "jest"
   },
   "devDependencies": {

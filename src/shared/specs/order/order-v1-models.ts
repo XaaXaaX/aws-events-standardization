@@ -18,7 +18,7 @@ export interface AnonymousSchema_1Object {
   orderId?: string;
 }
  
-export type EventType = "order.received.v1" | "order.Confirmed.v1";
+export type EventType = "order.received.v1" | "order.confirmed.v1" | "order.validated.v1";
  
 export type EventCategory = "IntegrationEvent" | "DeltaEvent" | "NotificationEvent" | "CarriedStateEvent";
  
